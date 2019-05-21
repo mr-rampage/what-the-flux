@@ -9,42 +9,21 @@
     <script src="random.flux.js"></script>
     <script src="wikipedia.flux.js"></script>
     <script>
-      const initialState = {
-        'foo': 'bar'
-      };
-
-      const reducers = {
-        [FOO_ACTION]: setFooReducer,
-        [BAR_ACTION]: setBarReducer,
-        [UPDATE_SEARCH_RESULTS_ACTION]: setWikiReducer
-      };
-
-      const sideEffects = {
-        [SEARCH_WIKIPEDIA_ACTION]: searchWikiSideEffect
-      };
-
-      const store = createStore(initialState, reduceReducers(reducers), applyMiddleware(sideEffects));
-      store.subscribe(printToScreen);
-
-      function printToScreen(state) {
-        document.getElementsByTagName('code')[0].innerText = JSON.stringify(state, null, 2)
-      }
-
-      function onSearch(search) {
-        store.dispatch(searchWikiAction(search))
+      function logState(state) {
+        document.querySelector('code').textContent = JSON.stringify(state, null, 2)
       }
     </script>
 </head>
 <body class="uk-padding">
 <div class="uk-margin">
     <div class="uk-search uk-search-default">
-        <input class="uk-search-input" onchange="onSearch(this.value)" type="search" placeholder="Search...">
+        <input class="uk-search-input" onchange="" type="search" placeholder="Search...">
     </div>
 </div>
 <div class="uk-margin">
-    <button class="uk-button uk-button-default" onclick="store.dispatch(setFooAction('baz'))">Baz</button>
-    <button class="uk-button uk-button-default" onclick="store.dispatch(setFooAction('buz'))">Buz</button>
-    <button class="uk-button uk-button-default" onclick="store.dispatch(setBarAction('quaxx'))">Bar</button>
+    <button class="uk-button uk-button-default" onclick="">Baz</button>
+    <button class="uk-button uk-button-default" onclick="">Buz</button>
+    <button class="uk-button uk-button-default" onclick="">Bar</button>
 </div>
 <div class="uk-margin">
     <pre><code></code></pre>
