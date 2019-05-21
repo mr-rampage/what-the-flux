@@ -24,21 +24,18 @@
       };
 
       const store = createStore(initialState, reduceReducers(reducers), applyMiddleware(sideEffects));
-      store.subscribe(printToScreen);
+      store.subscribe(logState);
 
-      function printToScreen(state) {
-        document.getElementsByTagName('code')[0].innerText = JSON.stringify(state, null, 2)
-      }
-
-      function onSearch(search) {
-        store.dispatch(searchWikiAction(search))
+      function logState(state) {
+        document.querySelector('code').textContent = JSON.stringify(state, null, 2)
       }
     </script>
 </head>
 <body class="uk-padding">
 <div class="uk-margin">
     <div class="uk-search uk-search-default">
-        <input class="uk-search-input" onchange="onSearch(this.value)" type="search" placeholder="Search...">
+        <input class="uk-search-input" onchange=" store.dispatch(searchWikiAction(this.value))"
+               type="search" placeholder="Search..."/>
     </div>
 </div>
 <div class="uk-margin">
