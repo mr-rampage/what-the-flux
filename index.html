@@ -4,44 +4,53 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.1.5/css/uikit.css"/>
+    <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/uikit/3.1.5/css/uikit.css"/>
     <script src="store.js"></script>
-    <script src="random.flux.js"></script>
+    <script src="actions.flux.js"></script>
+    <script src="middleware.flux.js"></script>
     <script src="wikipedia.flux.js"></script>
     <script>
-      const initialState = {
-        'foo': 'bar'
-      };
 
-      const reducers = {
-        [FOO_ACTION]: setFooReducer,
-        [BAR_ACTION]: setBarReducer,
-        [UPDATE_SEARCH_RESULTS_ACTION]: setWikiReducer
+      const initialState = {
+        'foo': '',
+        'bar': ''
       };
 
       const sideEffects = {
-        [SEARCH_WIKIPEDIA_ACTION]: searchWikiSideEffect
+        [SEARCH_WIKIPEDIA_ACTION]: SearchWikiEffect
       };
 
-      const store = createStore(initialState, reduceReducers(reducers), applyMiddleware(sideEffects));
+
+      const rootReducer = reduceReducer({
+        [UPDATE_FOO]: FooReducer,
+        [UPDATE_BAR]: BarReducer,
+        [UPDATE_SEARCH_RESULTS_ACTION]: SearchResultsReducer
+      });
+
+      const middleware = applyMiddleware(
+        ActionLogger(console.info),
+        Thunk(sideEffects)
+      );
+
+      const store = createStore(initialState, rootReducer, middleware);
       store.subscribe(logState);
 
       function logState(state) {
-        document.querySelector('code').textContent = JSON.stringify(state, null, 2)
+        document.querySelector('code').textContent = JSON.stringify(state, null, 2);
       }
     </script>
 </head>
 <body class="uk-padding">
 <div class="uk-margin">
     <div class="uk-search uk-search-default">
-        <input class="uk-search-input" onchange=" store.dispatch(searchWikiAction(this.value))"
-               type="search" placeholder="Search..."/>
+        <input class="uk-search-input" onchange="store.dispatch(SearchWikiAction(this.value))" type="search"
+               placeholder="Search...">
     </div>
 </div>
 <div class="uk-margin">
-    <button class="uk-button uk-button-default" onclick="store.dispatch(setFooAction('baz'))">Baz</button>
-    <button class="uk-button uk-button-default" onclick="store.dispatch(setFooAction('buz'))">Buz</button>
-    <button class="uk-button uk-button-default" onclick="store.dispatch(setBarAction('quaxx'))">Bar</button>
+    <button class="uk-button uk-button-default" onclick="store.dispatch(UpdateFooAction('Baz'))">Baz</button>
+    <button class="uk-button uk-button-default" onclick="store.dispatch(UpdateFooAction('Buz'))">Buz</button>
+    <button class="uk-button uk-button-default" onclick="store.dispatch(UpdateBarAction('Bar'))">Bar</button>
 </div>
 <div class="uk-margin">
     <pre><code></code></pre>

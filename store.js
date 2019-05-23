@@ -1,36 +1,43 @@
-function reduceReducers(reducers) {
-  return (state, action) => {
-    const reducer = reducers[action.type];
-    return reducer ? reducer(state, action) : state;
-  }
+function identity(x) {
+  return x;
 }
 
-function applyMiddleware(sideEffects) {
-  return next => (state, action) => {
-    const sideEffect = sideEffects[action.type];
-    return Promise.resolve(sideEffect ? sideEffect(state, action) : action).then(next);
-  }
-}
+function createStore(initialState, reducer = identity, enhancer = identity) {
+  let state = {
+    ...initialState
+  };
 
-function createStore(initialState, reducer, middleware = applyMiddleware([])) {
-  let state = { ...initialState };
-  const subscribers = [];
+  let observers = [];
 
   return {
     async dispatch(action) {
-      await middleware(next)(state, action);
+      state = await enhancer(next)(action);
     },
-    subscribe(subscriber) {
-      subscribers.push(subscriber)
+    subscribe(observer) {
+      observers.push(observer);
+      return unsubscribe.bind(null, observer);
     }
   };
 
   function next(action) {
-    state = reducer(state, action);
-    publish(state);
+    return publish(reducer(state, action));
   }
 
   function publish(state) {
-    subscribers.forEach(subscriber => subscriber(state));
+    observers.forEach(observer => observer({ ...state }));
+    return state;
   }
+
+  function unsubscribe(observer) {
+    observers = observers.filter(sub => sub !== observer);
+    return observer;
+  }
+}
+
+function reduceReducer(reducerMap) {
+  return (state, action) => reducerMap[action.type](state, action);
+}
+
+function applyMiddleware(...middlewares) {
+  return middlewares.reduce((f, g) => (...args) => f(g(...args)));
 }

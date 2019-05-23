@@ -1,28 +1,28 @@
-const SEARCH_WIKIPEDIA_ACTION = Symbol('Search Wikipedia');
+const SEARCH_WIKIPEDIA_ACTION = '[Search] Wikipedia';
 
-function searchWikiAction(payload) {
+function SearchWikiAction(payload) {
   return {
     'type': SEARCH_WIKIPEDIA_ACTION,
     payload
   }
 }
 
-function searchWikiSideEffect(state, action) {
-  return fetch(`http://en.wikipedia.org/w/api.php?action=opensearch&origin=*&search=${action.payload}`)
+function SearchWikiEffect(action) {
+  return fetch(`//en.wikipedia.org/w/api.php?action=opensearch&origin=*&search=${ action.payload }`)
     .then(response => response.json())
-    .then(setWikiAction);
+    .then(UpdateSearchResultsAction);
 }
 
-const UPDATE_SEARCH_RESULTS_ACTION = Symbol('Update Wikipedia results');
+const UPDATE_SEARCH_RESULTS_ACTION = '[Update] Search Results';
 
-function setWikiAction(payload) {
+function UpdateSearchResultsAction(payload) {
   return {
     'type': UPDATE_SEARCH_RESULTS_ACTION,
     payload
   };
 }
 
-function setWikiReducer(state, action) {
+function SearchResultsReducer(state, action) {
   return {
     ...state,
     'wiki': action.payload
